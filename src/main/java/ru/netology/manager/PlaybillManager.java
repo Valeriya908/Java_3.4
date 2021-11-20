@@ -2,40 +2,41 @@ package ru.netology.manager;
 
 import lombok.Data;
 import ru.netology.domain.Film;
+import ru.netology.repository.PlaybillRepository;
 
 @Data
 //@NoArgsConstructor
 //@AllArgsConstructor
 
 public class PlaybillManager {
-    private Film[] movies = new Film[0];
+    private PlaybillRepository repository;
     private int quantityFilm = 10;
 
-    public PlaybillManager() {
+    public PlaybillManager(PlaybillRepository repository) {
+        this.repository = repository;
     }
 
-    public PlaybillManager(int quantityFilm) {
+    public PlaybillManager(PlaybillRepository repository, int quantityFilm) {
         this.quantityFilm = quantityFilm;
+        this.repository = repository;
     }
 
     public void addFilm(Film movie) {
-        Film[] tmp = new Film[movies.length + 1];
-        System.arraycopy(movies, 0, tmp, 0, movies.length);
-        tmp[tmp.length - 1] = movie;
-        movies = tmp;
+        repository.save(movie);
     }
 
-    public Film[] getMovies() {
-        return movies;
+    public Film[] findAllFilm() {
+        return repository.findAll();
     }
 
     public Film[] listRecentFilm() {
         int resultLength;
-        if (quantityFilm < movies.length) {
+        if (quantityFilm < repository.findAll().length) {
             resultLength = quantityFilm;
         } else {
-            resultLength = movies.length;
+            resultLength = repository.findAll().length;
         }
+        Film[] movies = repository.findAll();
         Film[] result = new Film[resultLength];
         for (int i = 0; i < resultLength; i++) {
             int index = movies.length - i - 1;
@@ -44,4 +45,3 @@ public class PlaybillManager {
         return result;
     }
 }
-
